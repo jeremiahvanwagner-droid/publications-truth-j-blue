@@ -8,7 +8,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli @tailwindcss/postcss postcss autoprefixer"
+    "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli @tailwindcss/postcss postcss autoprefixer",
+    "launch:gate": "python scripts/launch_gate.py"
   },
   "keywords": [],
   "author": "",

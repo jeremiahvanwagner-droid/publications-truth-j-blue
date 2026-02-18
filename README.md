@@ -12,6 +12,8 @@ Static publication website for Truth J Blue and Jeremiah Van Wagner.
 - `content/`: Source material and product content (not deployed).
 - `content/internal/`: Planning and internal docs (not deployed).
 - `.github/workflows/`: CI validation and Pages deploy.
+- `scripts/launch_gate.py`: Phase 6 live acceptance checks.
+- `docs/launch/`: launch gate, submission, and baseline operations docs.
 
 ## Public Files Policy
 Only files inside `site/` are published. Source docs must remain outside `site/`.
@@ -52,6 +54,18 @@ Any push to `main`:
 1. runs `Validate Static Site`
 2. deploys `site/` via `Deploy Static Site to GitHub Pages`
 
+## Phase 6 Launch Operations
+Automated go-live gate:
+- `npm run launch:gate`
+- Writes `docs/launch/reports/latest-launch-gate.md`
+
+Manual handover set:
+- `docs/launch/phase-6-launch-gate.md`
+- `docs/launch/sitemap-submission-checklist.md`
+- `docs/launch/baseline-metrics.md`
+- `docs/releases/v1-freeze.md`
+- `docs/backlog/v1.1.md`
+
 ## Production URLs
 - `/`
 - `/publications.html`
@@ -67,7 +81,6 @@ Any push to `main`:
 - `/sitemap.xml`
 - `/robots.txt`
 
-
 ## Framework Workspace (Optional)
 A Next.js + Tailwind workspace is installed for future migration work, without changing current static deploy behavior.
 
@@ -75,8 +88,8 @@ Commands:
 - `npm run dev`
 - `npm run build`
 - `npm run start`
+- `npm run launch:gate`
 
 Important:
 - Production GitHub Pages deployment still publishes only `site/`.
 - Framework files (`app/`, `next.config.mjs`) are currently non-deploying scaffolding.
-
