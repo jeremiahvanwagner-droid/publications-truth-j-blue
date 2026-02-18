@@ -1,0 +1,4 @@
+﻿User-agent: *
+Allow: /
+Disallow: /cgi-bin/
+Sitemap: https://pub.jeremiahvanwagner.com/sitemap.xml
