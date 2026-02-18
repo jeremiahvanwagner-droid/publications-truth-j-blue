@@ -240,6 +240,25 @@ jobs:
           print("Local link validation passed.")
           PY
 
+      - name: Enforce program link policy
+        run: |
+          if grep -R -E "site\.truthjblue\.com/payment-link|buy\.stripe\.com|gumroad\.com|paypal\.com" site/programs.html; then
+            echo "Found prohibited direct checkout links in site/programs.html."
+            exit 1
+          fi
+
+          if ! grep -q "truthjblue.com/" site/programs.html; then
+            echo "Expected program-page links to truthjblue.com in site/programs.html."
+            exit 1
+          fi
+
+      - name: Guard v1 no-form policy
+        run: |
+          if grep -R -E "<form\b|action=" site --include='*.html'; then
+            echo "Found form markup in static v1 site."
+            exit 1
+          fi
+
       - name: Guard against Word export artifacts
         run: |
           if grep -R -E "Microsoft Word|pkg:package|mso-application|windows-1252" site --include='*.html' --include='*.xml*'; then
