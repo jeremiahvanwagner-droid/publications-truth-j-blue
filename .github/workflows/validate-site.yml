@@ -50,6 +50,15 @@ jobs:
             exit 1
           fi
 
+
+      - name: Validate custom domain contract
+        run: |
+          expected="pub.jeremiahvanwagner.com"
+          actual=$(tr -d '\r\n' < site/CNAME)
+          if [ "$actual" != "$expected" ]; then
+            echo "site/CNAME mismatch: expected '$expected' got '$actual'"
+            exit 1
+          fi
       - name: Validate sitemap XML and required URLs
         run: |
           python - <<'PY'
