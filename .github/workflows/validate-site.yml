@@ -1,0 +1,60 @@
+﻿name: Validate Static Site
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate structure and sitemap
+        run: |
+          set -euo pipefail
+
+          test -f index.html
+          test -f publications.html
+          test -f books.html
+          test -f programs.html
+          test -f sitemap.xml
+          test -f robots.txt
+
+          python - <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          tree = ET.parse('sitemap.xml')
+          root = tree.getroot()
+          ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs = [n.text for n in root.findall('sm:url/sm:loc', ns)]
+
+          required = {
+              'https://pub.jeremiahvanwagner.com/',
+              'https://pub.jeremiahvanwagner.com/publications.html',
+              'https://pub.jeremiahvanwagner.com/books.html',
+              'https://pub.jeremiahvanwagner.com/programs.html'
+          }
+
+          missing = required.difference(set(locs))
+          if missing:
+              print('Missing required URLs in sitemap.xml:', sorted(missing))
+              sys.exit(1)
+
+          print('Sitemap validation passed.')
+          PY
+
+      - name: Validate robots sitemap reference
+        run: |
+          grep -q "Sitemap: https://pub.jeremiahvanwagner.com/sitemap.xml" robots.txt
+
+      - name: Guard against Word export artifacts
+        run: |
+          if grep -R -E "Microsoft Word|pkg:package|mso-application|windows-1252" -- *.html *.xml*; then
+            echo "Found legacy Word-export artifacts."
+            exit 1
+          fi
