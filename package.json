@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli postcss autoprefixer"
+    "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli @tailwindcss/postcss postcss autoprefixer"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
   "private": true,
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
+    "@tailwindcss/postcss": "^4.1.18",
     "autoprefixer": "^10.4.24",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18"

@@ -66,3 +66,17 @@ Any push to `main`:
 - `/terms.html`
 - `/sitemap.xml`
 - `/robots.txt`
+
+
+## Framework Workspace (Optional)
+A Next.js + Tailwind workspace is installed for future migration work, without changing current static deploy behavior.
+
+Commands:
+- `npm run dev`
+- `npm run build`
+- `npm run start`
+
+Important:
+- Production GitHub Pages deployment still publishes only `site/`.
+- Framework files (`app/`, `next.config.mjs`) are currently non-deploying scaffolding.
+
