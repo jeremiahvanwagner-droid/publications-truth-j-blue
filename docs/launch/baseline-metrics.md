@@ -9,14 +9,12 @@ Use this document to capture launch-day and early crawl/index benchmarks.
 - Snapshot date (UTC): `2026-02-18`
 - Production launch gate: `docs/launch/reports/latest-launch-gate.md`
 - Production gate status: `FAIL`
-- Alternate host audit: `docs/launch/reports/github-pages-audit.md`
-- Alternate host gate status: `PASS`
-- Blocking issue: custom domain TLS/domain binding mismatch (`pub.jeremiahvanwagner.com`)
+- Blocking issue: DNS is not pointing to GitHub Pages for host `pub`
 
 ## Search Console Baseline
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Property verified | Pending | blocked until HTTPS is healthy |
+| Property verified | Pending | blocked until DNS/domain routing is corrected |
 | Sitemap submitted | Pending | |
 | Indexed pages | Pending | |
 | Excluded pages | Pending | |
@@ -26,7 +24,7 @@ Use this document to capture launch-day and early crawl/index benchmarks.
 ## Bing Webmaster Baseline
 | Metric | Value | Notes |
 | --- | --- | --- |
-| Property verified | Pending | blocked until HTTPS is healthy |
+| Property verified | Pending | blocked until DNS/domain routing is corrected |
 | Sitemap submitted | Pending | |
 | Indexed pages | Pending | |
 | Crawl issues | Pending | |

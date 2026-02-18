@@ -12,15 +12,15 @@ Production domain gate:
 npm run launch:gate
 ```
 
-Pre-cutover content gate (validates production canonical contract while fetching from GitHub Pages URL):
+This command validates:
+- DNS contract for canonical host (must resolve to GitHub Pages edge)
+- core URL reachability
+- robots/sitemap behavior
+- metadata and schema parity
+- program link policy
 
-```bash
-npm run launch:gate:github
-```
-
-Output report paths:
+Output report path:
 - `docs/launch/reports/latest-launch-gate.md`
-- `docs/launch/reports/github-pages-audit.md`
 
 Gate status rules:
 - `PASS`: all checks pass.
@@ -38,7 +38,7 @@ Gate status rules:
 7. Program page contains program-page links only (no direct checkout links).
 
 ## Manual Handover Tasks
-1. If production gate fails due TLS/domain mapping, run `docs/launch/custom-domain-repair.md`.
+1. If production gate fails due DNS/domain mapping, run `docs/launch/custom-domain-repair.md`.
 2. Submit `https://pub.jeremiahvanwagner.com/sitemap.xml` in Google Search Console.
 3. Submit the same sitemap in Bing Webmaster Tools.
 4. Capture baseline crawl/index/query metrics in `docs/launch/baseline-metrics.md`.

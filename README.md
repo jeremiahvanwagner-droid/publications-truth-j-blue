@@ -57,13 +57,9 @@ Any push to `main`:
 2. deploys `site/` via `Deploy Static Site to GitHub Pages`
 
 ## Phase 6 Launch Operations
-Primary production gate:
+Production launch gate:
 - `npm run launch:gate`
 - Writes `docs/launch/reports/latest-launch-gate.md`
-
-Pre-cutover content audit (fetches GitHub Pages URL, validates production canonical contract):
-- `npm run launch:gate:github`
-- Writes `docs/launch/reports/github-pages-audit.md`
 
 Manual handover set:
 - `docs/launch/phase-6-launch-gate.md`
@@ -96,7 +92,6 @@ Commands:
 - `npm run build`
 - `npm run start`
 - `npm run launch:gate`
-- `npm run launch:gate:github`
 
 Important:
 - Production GitHub Pages deployment still publishes only `site/`.

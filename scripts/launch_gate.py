@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import json
 import re
+import socket
 import ssl
 import sys
 import xml.etree.ElementTree as ET
@@ -16,6 +17,18 @@ from typing import Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+
+
+GITHUB_PAGES_EDGE_IPS = {
+    "185.199.108.153",
+    "185.199.109.153",
+    "185.199.110.153",
+    "185.199.111.153",
+    "2606:50c0:8000::153",
+    "2606:50c0:8001::153",
+    "2606:50c0:8002::153",
+    "2606:50c0:8003::153",
+}
 
 
 INDEXABLE_PATHS = [
@@ -121,6 +134,34 @@ class LaunchGate:
             return None, "", {}, str(exc)
         except Exception as exc:  # pragma: no cover
             return None, "", {}, str(exc)
+
+    def _check_dns_contract(self) -> None:
+        host = urlparse(self.canonical_base_url).hostname
+        if not host:
+            self._record("DNS contract", False, "Could not parse host from canonical base URL")
+            return
+
+        if host.endswith(".github.io"):
+            self._record("DNS contract", True, f"Host {host} is a github.io domain")
+            return
+
+        try:
+            infos = socket.getaddrinfo(host, 443)
+        except socket.gaierror as exc:
+            self._record("DNS contract", False, f"DNS lookup failed for {host}: {exc}")
+            return
+
+        resolved_ips = sorted({info[4][0] for info in infos if info and info[4]})
+        if not resolved_ips:
+            self._record("DNS contract", False, f"No DNS addresses resolved for {host}")
+            return
+
+        if any(ip in GITHUB_PAGES_EDGE_IPS for ip in resolved_ips):
+            self._record("DNS contract", True, f"{host} resolves to GitHub Pages edge IPs")
+            return
+
+        detail = f"{host} resolves to non-GitHub IPs: {', '.join(resolved_ips)}"
+        self._record("DNS contract", False, detail)
 
     def _check_core_urls(self) -> Dict[str, str]:
         pages: Dict[str, str] = {}
@@ -344,6 +385,7 @@ class LaunchGate:
         self._record("Program link policy", True, "no checkout links present; program-page links present")
 
     def run(self) -> List[CheckResult]:
+        self._check_dns_contract()
         pages = self._check_core_urls()
         self._check_about_alias()
         self._check_robots()
