@@ -102,15 +102,21 @@ jobs:
 
           required_patterns = {
               "title": re.compile(r"<title>[^<]+</title>", re.I),
-              "description": re.compile(r'<meta\s+name=["\\\']description["\\\']', re.I),
-              "canonical": re.compile(r'<link\s+rel=["\\\']canonical["\\\']', re.I),
-              "og:title": re.compile(r'<meta\s+property=["\\\']og:title["\\\']', re.I),
-              "og:description": re.compile(r'<meta\s+property=["\\\']og:description["\\\']', re.I),
-              "og:image": re.compile(r'<meta\s+property=["\\\']og:image["\\\']', re.I),
-              "twitter:card": re.compile(r'<meta\s+name=["\\\']twitter:card["\\\']', re.I),
+              "description": re.compile(r'<meta\s+name=["\']description["\']', re.I),
+              "canonical": re.compile(r'<link\s+rel=["\']canonical["\']', re.I),
+              "og:title": re.compile(r'<meta\s+property=["\']og:title["\']', re.I),
+              "og:description": re.compile(r'<meta\s+property=["\']og:description["\']', re.I),
+              "og:image": re.compile(r'<meta\s+property=["\']og:image["\']', re.I),
+              "twitter:card": re.compile(r'<meta\s+name=["\']twitter:card["\']', re.I),
+              "twitter:title": re.compile(r'<meta\s+name=["\']twitter:title["\']', re.I),
+              "twitter:description": re.compile(r'<meta\s+name=["\']twitter:description["\']', re.I),
+              "twitter:image": re.compile(r'<meta\s+name=["\']twitter:image["\']', re.I),
           }
 
+          expected_og_image = "https://pub.jeremiahvanwagner.com/assets/og-default.svg"
           failures = []
+          seen_titles = {}
+          seen_descriptions = {}
 
           for path in indexable:
               text = path.read_text(encoding="utf-8")
@@ -127,13 +133,40 @@ jobs:
               else:
                   expected = f"https://pub.jeremiahvanwagner.com/{path.name}"
 
-              canonical_match = re.search(r'<link\s+rel=["\\\']canonical["\\\']\s+href=["\\\']([^"\\\']+)["\\\']', text, flags=re.I)
+              canonical_match = re.search(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']', text, flags=re.I)
               if not canonical_match:
                   failures.append(f"{path.name}: canonical href missing")
               else:
                   canonical = canonical_match.group(1).strip()
                   if canonical != expected:
                       failures.append(f"{path.name}: canonical mismatch ({canonical} != {expected})")
+
+              title_match = re.search(r"<title>(.*?)</title>", text, flags=re.I | re.S)
+              title = " ".join(title_match.group(1).split()) if title_match else ""
+              if title:
+                  seen_titles.setdefault(title, []).append(path.name)
+
+              desc_match = re.search(r'<meta\s+name=["\']description["\']\s+content=["\']([^"\']*)["\']', text, flags=re.I)
+              description = " ".join(desc_match.group(1).split()) if desc_match else ""
+              if description:
+                  seen_descriptions.setdefault(description, []).append(path.name)
+
+              og_image_match = re.search(r'<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']', text, flags=re.I)
+              if og_image_match and og_image_match.group(1).strip() != expected_og_image:
+                  failures.append(f"{path.name}: og:image must be {expected_og_image}")
+
+              twitter_image_match = re.search(r'<meta\s+name=["\']twitter:image["\']\s+content=["\']([^"\']+)["\']', text, flags=re.I)
+              if twitter_image_match and twitter_image_match.group(1).strip() != expected_og_image:
+                  failures.append(f"{path.name}: twitter:image must be {expected_og_image}")
+
+          duplicate_titles = {k: v for k, v in seen_titles.items() if len(v) > 1}
+          duplicate_descriptions = {k: v for k, v in seen_descriptions.items() if len(v) > 1}
+
+          for title, pages in duplicate_titles.items():
+              failures.append(f"Duplicate <title> across pages {pages}: {title}")
+
+          for description, pages in duplicate_descriptions.items():
+              failures.append(f"Duplicate meta description across pages {pages}: {description}")
 
           redirect = site / "about.html"
           redirect_text = redirect.read_text(encoding="utf-8")
@@ -150,7 +183,6 @@ jobs:
 
           print("Metadata and heading validation passed.")
           PY
-
       - name: Validate JSON-LD blocks
         run: |
           python - <<'PY'
@@ -186,6 +218,79 @@ jobs:
           print("JSON-LD validation passed.")
           PY
 
+      - name: Validate schema coverage
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          site = Path("site")
+
+          required_schema = {
+              "index.html": {"Organization"},
+              "publications.html": {"BreadcrumbList"},
+              "books.html": {"BreadcrumbList", "Book"},
+              "programs.html": {"BreadcrumbList", "Product"},
+              "about-jeremiah.html": {"BreadcrumbList", "ProfilePage", "Person"},
+              "manifesto.html": {"BreadcrumbList", "Article"},
+              "philosophy.html": {"BreadcrumbList", "Article"},
+              "contact.html": {"BreadcrumbList"},
+              "privacy.html": {"BreadcrumbList"},
+              "terms.html": {"BreadcrumbList"},
+              "sitemap.html": {"BreadcrumbList"},
+          }
+
+          def collect_types(node, out):
+              if isinstance(node, dict):
+                  node_type = node.get("@type")
+                  if isinstance(node_type, str):
+                      out.add(node_type)
+                  elif isinstance(node_type, list):
+                      for item in node_type:
+                          if isinstance(item, str):
+                              out.add(item)
+                  for value in node.values():
+                      collect_types(value, out)
+              elif isinstance(node, list):
+                  for item in node:
+                      collect_types(item, out)
+
+          failures = []
+
+          for filename, required_types in required_schema.items():
+              path = site / filename
+              text = path.read_text(encoding="utf-8")
+              blocks = re.findall(
+                  r'<script\s+type=["\']application/ld\+json["\']\s*>(.*?)</script>',
+                  text,
+                  flags=re.I | re.S,
+              )
+
+              found_types = set()
+              for block in blocks:
+                  snippet = block.strip()
+                  if not snippet:
+                      continue
+                  try:
+                      data = json.loads(snippet)
+                  except json.JSONDecodeError:
+                      continue
+                  collect_types(data, found_types)
+
+              missing = sorted(required_types.difference(found_types))
+              if missing:
+                  failures.append(f"{filename}: missing schema types {', '.join(missing)}")
+
+          if failures:
+              print("Schema coverage validation failed:")
+              for failure in failures:
+                  print(f" - {failure}")
+              sys.exit(1)
+
+          print("Schema coverage validation passed.")
+          PY
       - name: Validate local links and asset references
         run: |
           python - <<'PY'
