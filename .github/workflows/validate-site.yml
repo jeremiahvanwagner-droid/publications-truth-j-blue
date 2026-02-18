@@ -102,12 +102,12 @@ jobs:
 
           required_patterns = {
               "title": re.compile(r"<title>[^<]+</title>", re.I),
-              "description": re.compile(r'<meta\\s+name=["\\\']description["\\\']', re.I),
-              "canonical": re.compile(r'<link\\s+rel=["\\\']canonical["\\\']', re.I),
-              "og:title": re.compile(r'<meta\\s+property=["\\\']og:title["\\\']', re.I),
-              "og:description": re.compile(r'<meta\\s+property=["\\\']og:description["\\\']', re.I),
-              "og:image": re.compile(r'<meta\\s+property=["\\\']og:image["\\\']', re.I),
-              "twitter:card": re.compile(r'<meta\\s+name=["\\\']twitter:card["\\\']', re.I),
+              "description": re.compile(r'<meta\s+name=["\\\']description["\\\']', re.I),
+              "canonical": re.compile(r'<link\s+rel=["\\\']canonical["\\\']', re.I),
+              "og:title": re.compile(r'<meta\s+property=["\\\']og:title["\\\']', re.I),
+              "og:description": re.compile(r'<meta\s+property=["\\\']og:description["\\\']', re.I),
+              "og:image": re.compile(r'<meta\s+property=["\\\']og:image["\\\']', re.I),
+              "twitter:card": re.compile(r'<meta\s+name=["\\\']twitter:card["\\\']', re.I),
           }
 
           failures = []
@@ -118,7 +118,7 @@ jobs:
               if missing:
                   failures.append(f"{path.name}: missing {', '.join(missing)}")
 
-              h1_count = len(re.findall(r"<h1\\b", text, flags=re.I))
+              h1_count = len(re.findall(r"<h1\b", text, flags=re.I))
               if h1_count != 1:
                   failures.append(f"{path.name}: expected exactly 1 h1, found {h1_count}")
 
@@ -127,7 +127,7 @@ jobs:
               else:
                   expected = f"https://pub.jeremiahvanwagner.com/{path.name}"
 
-              canonical_match = re.search(r'<link\\s+rel=["\\\']canonical["\\\']\\s+href=["\\\']([^"\\\']+)["\\\']', text, flags=re.I)
+              canonical_match = re.search(r'<link\s+rel=["\\\']canonical["\\\']\s+href=["\\\']([^"\\\']+)["\\\']', text, flags=re.I)
               if not canonical_match:
                   failures.append(f"{path.name}: canonical href missing")
               else:
@@ -163,7 +163,7 @@ jobs:
           for path in sorted(Path("site").glob("*.html")):
               text = path.read_text(encoding="utf-8")
               blocks = re.findall(
-                  r'<script\\s+type=["\\\']application/ld\\+json["\\\']\\s*>(.*?)</script>',
+                  r'<script\s+type=["\\\']application/ld\+json["\\\']\s*>(.*?)</script>',
                   text,
                   flags=re.I | re.S,
               )
@@ -246,3 +246,4 @@ jobs:
             echo "Found legacy Word-export artifacts in publish directory."
             exit 1
           fi
+
