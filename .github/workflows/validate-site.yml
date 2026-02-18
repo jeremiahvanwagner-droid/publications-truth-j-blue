@@ -1,4 +1,4 @@
-﻿name: Validate Static Site
+name: Validate Static Site
 
 on:
   push:
@@ -13,48 +13,236 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate structure and sitemap
+      - name: Validate publish boundary and required files
         run: |
           set -euo pipefail
 
-          test -f index.html
-          test -f publications.html
-          test -f books.html
-          test -f programs.html
-          test -f sitemap.xml
-          test -f robots.txt
+          test -d site
 
+          required_files=(
+            site/index.html
+            site/publications.html
+            site/books.html
+            site/programs.html
+            site/about-jeremiah.html
+            site/manifesto.html
+            site/philosophy.html
+            site/sitemap.html
+            site/contact.html
+            site/privacy.html
+            site/terms.html
+            site/404.html
+            site/sitemap.xml
+            site/robots.txt
+            site/CNAME
+            site/.nojekyll
+            site/styles.css
+            site/assets/og-default.svg
+          )
+
+          for file in "${required_files[@]}"; do
+            test -f "$file"
+          done
+
+          if find site -type f -name "*.md" | grep -q .; then
+            echo "Markdown source files are present in the publish directory:"
+            find site -type f -name "*.md"
+            exit 1
+          fi
+
+      - name: Validate sitemap XML and required URLs
+        run: |
           python - <<'PY'
           import sys
           import xml.etree.ElementTree as ET
 
-          tree = ET.parse('sitemap.xml')
+          tree = ET.parse("site/sitemap.xml")
           root = tree.getroot()
-          ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-          locs = [n.text for n in root.findall('sm:url/sm:loc', ns)]
+          ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          locs = [n.text for n in root.findall("sm:url/sm:loc", ns)]
 
           required = {
-              'https://pub.jeremiahvanwagner.com/',
-              'https://pub.jeremiahvanwagner.com/publications.html',
-              'https://pub.jeremiahvanwagner.com/books.html',
-              'https://pub.jeremiahvanwagner.com/programs.html'
+              "https://pub.jeremiahvanwagner.com/",
+              "https://pub.jeremiahvanwagner.com/publications.html",
+              "https://pub.jeremiahvanwagner.com/books.html",
+              "https://pub.jeremiahvanwagner.com/programs.html",
+              "https://pub.jeremiahvanwagner.com/about-jeremiah.html",
+              "https://pub.jeremiahvanwagner.com/manifesto.html",
+              "https://pub.jeremiahvanwagner.com/philosophy.html",
+              "https://pub.jeremiahvanwagner.com/sitemap.html",
+              "https://pub.jeremiahvanwagner.com/contact.html",
+              "https://pub.jeremiahvanwagner.com/privacy.html",
+              "https://pub.jeremiahvanwagner.com/terms.html",
           }
 
-          missing = required.difference(set(locs))
+          missing = sorted(required.difference(set(locs)))
           if missing:
-              print('Missing required URLs in sitemap.xml:', sorted(missing))
+              print("Missing required URLs in site/sitemap.xml:")
+              for url in missing:
+                  print(f" - {url}")
               sys.exit(1)
 
-          print('Sitemap validation passed.')
+          print("Sitemap validation passed.")
           PY
 
       - name: Validate robots sitemap reference
         run: |
-          grep -q "Sitemap: https://pub.jeremiahvanwagner.com/sitemap.xml" robots.txt
+          grep -q "Sitemap: https://pub.jeremiahvanwagner.com/sitemap.xml" site/robots.txt
+
+      - name: Validate metadata and heading parity
+        run: |
+          python - <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          site = Path("site")
+          html_files = sorted(site.glob("*.html"))
+          indexable = [p for p in html_files if p.name != "about.html"]
+
+          required_patterns = {
+              "title": re.compile(r"<title>[^<]+</title>", re.I),
+              "description": re.compile(r'<meta\\s+name=["\\\']description["\\\']', re.I),
+              "canonical": re.compile(r'<link\\s+rel=["\\\']canonical["\\\']', re.I),
+              "og:title": re.compile(r'<meta\\s+property=["\\\']og:title["\\\']', re.I),
+              "og:description": re.compile(r'<meta\\s+property=["\\\']og:description["\\\']', re.I),
+              "og:image": re.compile(r'<meta\\s+property=["\\\']og:image["\\\']', re.I),
+              "twitter:card": re.compile(r'<meta\\s+name=["\\\']twitter:card["\\\']', re.I),
+          }
+
+          failures = []
+
+          for path in indexable:
+              text = path.read_text(encoding="utf-8")
+              missing = [k for k, pattern in required_patterns.items() if not pattern.search(text)]
+              if missing:
+                  failures.append(f"{path.name}: missing {', '.join(missing)}")
+
+              h1_count = len(re.findall(r"<h1\\b", text, flags=re.I))
+              if h1_count != 1:
+                  failures.append(f"{path.name}: expected exactly 1 h1, found {h1_count}")
+
+              if path.name == "index.html":
+                  expected = "https://pub.jeremiahvanwagner.com/"
+              else:
+                  expected = f"https://pub.jeremiahvanwagner.com/{path.name}"
+
+              canonical_match = re.search(r'<link\\s+rel=["\\\']canonical["\\\']\\s+href=["\\\']([^"\\\']+)["\\\']', text, flags=re.I)
+              if not canonical_match:
+                  failures.append(f"{path.name}: canonical href missing")
+              else:
+                  canonical = canonical_match.group(1).strip()
+                  if canonical != expected:
+                      failures.append(f"{path.name}: canonical mismatch ({canonical} != {expected})")
+
+          redirect = site / "about.html"
+          redirect_text = redirect.read_text(encoding="utf-8")
+          if "noindex,follow" not in redirect_text:
+              failures.append("about.html: missing noindex,follow")
+          if "url=about-jeremiah.html" not in redirect_text:
+              failures.append("about.html: missing redirect target to about-jeremiah.html")
+
+          if failures:
+              print("Metadata validation failed:")
+              for failure in failures:
+                  print(f" - {failure}")
+              sys.exit(1)
+
+          print("Metadata and heading validation passed.")
+          PY
+
+      - name: Validate JSON-LD blocks
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          failures = []
+          for path in sorted(Path("site").glob("*.html")):
+              text = path.read_text(encoding="utf-8")
+              blocks = re.findall(
+                  r'<script\\s+type=["\\\']application/ld\\+json["\\\']\\s*>(.*?)</script>',
+                  text,
+                  flags=re.I | re.S,
+              )
+              for i, block in enumerate(blocks, start=1):
+                  snippet = block.strip()
+                  if not snippet:
+                      failures.append(f"{path.name}: empty JSON-LD block #{i}")
+                      continue
+                  try:
+                      json.loads(snippet)
+                  except json.JSONDecodeError as exc:
+                      failures.append(f"{path.name}: invalid JSON-LD block #{i} ({exc})")
+
+          if failures:
+              print("JSON-LD validation failed:")
+              for failure in failures:
+                  print(f" - {failure}")
+              sys.exit(1)
+
+          print("JSON-LD validation passed.")
+          PY
+
+      - name: Validate local links and asset references
+        run: |
+          python - <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+          from urllib.parse import urlparse, unquote
+
+          site = Path("site")
+          html_files = sorted(site.glob("*.html"))
+          failures = []
+
+          def is_external(url: str) -> bool:
+              parsed = urlparse(url)
+              return parsed.scheme in {"http", "https", "mailto", "tel"} or url.startswith("//")
+
+          for path in html_files:
+              text = path.read_text(encoding="utf-8")
+              refs = re.findall(r'(?:href|src)=["\\\']([^"\\\']+)["\\\']', text, flags=re.I)
+              for ref in refs:
+                  ref = ref.strip()
+                  if not ref or ref.startswith("#") or ref.startswith("javascript:"):
+                      continue
+                  if is_external(ref):
+                      continue
+
+                  clean = unquote(ref.split("#", 1)[0].split("?", 1)[0])
+                  if not clean:
+                      continue
+
+                  if clean.startswith("/"):
+                      target = site / clean.lstrip("/")
+                  else:
+                      base = path.parent.resolve()
+                      target = (base / clean).resolve()
+                      try:
+                          target = target.relative_to(site.resolve())
+                          target = site / target
+                      except ValueError:
+                          failures.append(f"{path.name}: reference escapes site directory ({ref})")
+                          continue
+
+                  if not target.exists():
+                      failures.append(f"{path.name}: missing local target ({ref})")
+
+          if failures:
+              print("Local link validation failed:")
+              for failure in failures:
+                  print(f" - {failure}")
+              sys.exit(1)
+
+          print("Local link validation passed.")
+          PY
 
       - name: Guard against Word export artifacts
         run: |
-          if grep -R -E "Microsoft Word|pkg:package|mso-application|windows-1252" -- *.html *.xml*; then
-            echo "Found legacy Word-export artifacts."
+          if grep -R -E "Microsoft Word|pkg:package|mso-application|windows-1252" site --include='*.html' --include='*.xml*'; then
+            echo "Found legacy Word-export artifacts in publish directory."
             exit 1
           fi
