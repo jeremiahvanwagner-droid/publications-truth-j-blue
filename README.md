@@ -10,6 +10,7 @@ Static publication website for Truth J Blue and Jeremiah Van Wagner.
 ## Repository Layout
 - `site/`: Public web artifact only (HTML, CSS, crawl files, assets).
 - `content/`: Source material and product content (not deployed).
+- `content/truth-j-blue-manifesto.md`: Long-form manifesto source converted from DOCX.
 - `content/internal/`: Planning and internal docs (not deployed).
 - `.github/workflows/`: CI validation and Pages deploy.
 - `scripts/launch_gate.py`: Phase 6 live acceptance checks.
