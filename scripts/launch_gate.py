@@ -7,12 +7,14 @@ import argparse
 import datetime as dt
 import json
 import re
+import ssl
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 
@@ -39,33 +41,15 @@ BANNED_PROGRAM_PATTERNS = [
 
 META_PATTERNS = {
     "title": re.compile(r"<title>[^<]+</title>", re.IGNORECASE | re.DOTALL),
-    "description": re.compile(
-        r'<meta\s+name=["\']description["\']', re.IGNORECASE
-    ),
-    "canonical": re.compile(
-        r'<link\s+rel=["\']canonical["\']', re.IGNORECASE
-    ),
-    "og:title": re.compile(
-        r'<meta\s+property=["\']og:title["\']', re.IGNORECASE
-    ),
-    "og:description": re.compile(
-        r'<meta\s+property=["\']og:description["\']', re.IGNORECASE
-    ),
-    "og:image": re.compile(
-        r'<meta\s+property=["\']og:image["\']', re.IGNORECASE
-    ),
-    "twitter:card": re.compile(
-        r'<meta\s+name=["\']twitter:card["\']', re.IGNORECASE
-    ),
-    "twitter:title": re.compile(
-        r'<meta\s+name=["\']twitter:title["\']', re.IGNORECASE
-    ),
-    "twitter:description": re.compile(
-        r'<meta\s+name=["\']twitter:description["\']', re.IGNORECASE
-    ),
-    "twitter:image": re.compile(
-        r'<meta\s+name=["\']twitter:image["\']', re.IGNORECASE
-    ),
+    "description": re.compile(r'<meta\s+name=["\']description["\']', re.IGNORECASE),
+    "canonical": re.compile(r'<link\s+rel=["\']canonical["\']', re.IGNORECASE),
+    "og:title": re.compile(r'<meta\s+property=["\']og:title["\']', re.IGNORECASE),
+    "og:description": re.compile(r'<meta\s+property=["\']og:description["\']', re.IGNORECASE),
+    "og:image": re.compile(r'<meta\s+property=["\']og:image["\']', re.IGNORECASE),
+    "twitter:card": re.compile(r'<meta\s+name=["\']twitter:card["\']', re.IGNORECASE),
+    "twitter:title": re.compile(r'<meta\s+name=["\']twitter:title["\']', re.IGNORECASE),
+    "twitter:description": re.compile(r'<meta\s+name=["\']twitter:description["\']', re.IGNORECASE),
+    "twitter:image": re.compile(r'<meta\s+name=["\']twitter:image["\']', re.IGNORECASE),
 }
 
 
@@ -77,29 +61,51 @@ class CheckResult:
 
 
 class LaunchGate:
-    def __init__(self, base_url: str, timeout: int) -> None:
-        self.base_url = base_url.rstrip("/")
+    def __init__(
+        self,
+        fetch_base_url: str,
+        canonical_base_url: str,
+        timeout: int,
+        insecure: bool,
+    ) -> None:
+        self.fetch_base_url = fetch_base_url.rstrip("/")
+        self.canonical_base_url = canonical_base_url.rstrip("/")
         self.timeout = timeout
+        self.insecure = insecure
+        self.ssl_context = ssl._create_unverified_context() if insecure else None
         self.results: List[CheckResult] = []
 
     def _record(self, name: str, passed: bool, detail: str) -> None:
         self.results.append(CheckResult(name=name, passed=passed, detail=detail))
 
-    def _url(self, path: str) -> str:
+    def _fetch_url(self, path: str) -> str:
         if path == "/":
-            return f"{self.base_url}/"
+            return f"{self.fetch_base_url}/"
         if path.startswith("/"):
-            return f"{self.base_url}{path}"
-        return f"{self.base_url}/{path}"
+            return f"{self.fetch_base_url}{path}"
+        return f"{self.fetch_base_url}/{path}"
+
+    def _canonical_url(self, path: str) -> str:
+        if path == "/":
+            return f"{self.canonical_base_url}/"
+        if path.startswith("/"):
+            return f"{self.canonical_base_url}{path}"
+        return f"{self.canonical_base_url}/{path}"
 
     def _fetch(self, path: str) -> Tuple[Optional[int], str, Dict[str, str], Optional[str]]:
-        url = self._url(path)
+        url = self._fetch_url(path)
         request = Request(
             url,
-            headers={"User-Agent": "TruthJBlueLaunchGate/1.0 (+https://pub.jeremiahvanwagner.com)"},
+            headers={"User-Agent": "TruthJBlueLaunchGate/1.1 (+https://pub.jeremiahvanwagner.com)"},
         )
+
         try:
-            with urlopen(request, timeout=self.timeout) as response:
+            if self.ssl_context is not None:
+                response = urlopen(request, timeout=self.timeout, context=self.ssl_context)
+            else:
+                response = urlopen(request, timeout=self.timeout)
+
+            with response:
                 status = response.getcode()
                 body = response.read().decode("utf-8", errors="replace")
                 headers = {k.lower(): v for k, v in response.getheaders()}
@@ -111,6 +117,8 @@ class LaunchGate:
         except URLError as exc:
             reason = str(exc.reason) if getattr(exc, "reason", None) else str(exc)
             return None, "", {}, reason
+        except ssl.SSLError as exc:
+            return None, "", {}, str(exc)
         except Exception as exc:  # pragma: no cover
             return None, "", {}, str(exc)
 
@@ -137,6 +145,7 @@ class LaunchGate:
         if status not in {200, 301, 302}:
             self._record("about.html alias behavior", False, f"Unexpected HTTP {status}")
             return
+
         has_noindex = "noindex,follow" in body
         has_target = "url=about-jeremiah.html" in body
         passed = has_noindex and has_target
@@ -151,8 +160,9 @@ class LaunchGate:
         if status != 200:
             self._record("robots.txt reachable", False, f"HTTP {status}")
             return
+
         self._record("robots.txt reachable", True, "HTTP 200")
-        expected = f"Sitemap: {self.base_url}/sitemap.xml"
+        expected = f"Sitemap: {self.canonical_base_url}/sitemap.xml"
         self._record(
             "robots.txt sitemap pointer",
             expected in body,
@@ -167,6 +177,7 @@ class LaunchGate:
         if status != 200:
             self._record("sitemap.xml reachable", False, f"HTTP {status}")
             return
+
         self._record("sitemap.xml reachable", True, "HTTP 200")
 
         try:
@@ -178,7 +189,7 @@ class LaunchGate:
         self._record("sitemap.xml is valid XML", True, "parse ok")
         ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
         locs = [node.text for node in root.findall("sm:url/sm:loc", ns) if node.text]
-        required = {self._url(path) for path in INDEXABLE_PATHS}
+        required = {self._canonical_url(path) for path in INDEXABLE_PATHS}
         missing = sorted(required.difference(set(locs)))
 
         if missing:
@@ -189,10 +200,12 @@ class LaunchGate:
 
         status_failures: List[str] = []
         for url in sorted(set(locs)):
-            path = url.replace(self.base_url, "", 1)
-            if not path.startswith("/"):
-                continue
-            page_status, _, _, page_error = self._fetch(path)
+            parsed = urlparse(url)
+            fetch_path = parsed.path or "/"
+            if parsed.query:
+                fetch_path = f"{fetch_path}?{parsed.query}"
+
+            page_status, _, _, page_error = self._fetch(fetch_path)
             if page_error:
                 status_failures.append(f"{url} ({page_error})")
                 continue
@@ -200,11 +213,7 @@ class LaunchGate:
                 status_failures.append(f"{url} (HTTP {page_status})")
 
         if status_failures:
-            self._record(
-                "Sitemap URLs return 200",
-                False,
-                "; ".join(status_failures),
-            )
+            self._record("Sitemap URLs return 200", False, "; ".join(status_failures))
         else:
             self._record("Sitemap URLs return 200", True, "all sitemap URLs returned HTTP 200")
 
@@ -213,6 +222,7 @@ class LaunchGate:
         if error:
             self._record("Custom 404 behavior", False, error)
             return
+
         body_lower = body.lower()
         looks_like_404 = "404" in body_lower or "not found" in body_lower
         passed = status == 404 or (status == 200 and looks_like_404)
@@ -220,7 +230,7 @@ class LaunchGate:
         self._record("Custom 404 behavior", passed, detail)
 
     def _check_page_metadata(self, pages: Dict[str, str]) -> None:
-        expected_image = f"{self.base_url}/assets/og-default.svg"
+        expected_image = f"{self.canonical_base_url}/assets/og-default.svg"
         title_index: Dict[str, List[str]] = {}
         desc_index: Dict[str, List[str]] = {}
         failures: List[str] = []
@@ -239,7 +249,7 @@ class LaunchGate:
                 body,
                 flags=re.IGNORECASE,
             )
-            expected_canonical = self._url(path)
+            expected_canonical = self._canonical_url(path)
             if not canonical_match:
                 failures.append(f"{path} missing canonical href")
             elif canonical_match.group(1).strip() != expected_canonical:
@@ -348,7 +358,7 @@ class LaunchGate:
         return self.results
 
 
-def render_markdown(base_url: str, results: List[CheckResult]) -> str:
+def render_markdown(canonical_base_url: str, fetch_base_url: str, results: List[CheckResult]) -> str:
     total = len(results)
     passed = sum(1 for result in results if result.passed)
     failed = total - passed
@@ -359,7 +369,8 @@ def render_markdown(base_url: str, results: List[CheckResult]) -> str:
         "# Phase 6 Launch Gate Report",
         "",
         f"- Run (UTC): {run_time}",
-        f"- Base URL: {base_url}",
+        f"- Canonical Base URL: {canonical_base_url}",
+        f"- Fetch Base URL: {fetch_base_url}",
         f"- Gate Status: {gate}",
         f"- Checks Passed: {passed}/{total}",
         "",
@@ -380,13 +391,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--base-url",
         default="https://pub.jeremiahvanwagner.com",
-        help="Base URL to validate (default: %(default)s)",
+        help="Canonical base URL contract (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--fetch-base-url",
+        default=None,
+        help="Optional fetch base URL when validating via alternate host (for example GitHub Pages URL).",
     )
     parser.add_argument(
         "--timeout",
         type=int,
         default=20,
         help="HTTP timeout in seconds (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Skip TLS certificate verification for diagnostics.",
     )
     parser.add_argument(
         "--output",
@@ -398,9 +419,17 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    gate = LaunchGate(base_url=args.base_url, timeout=args.timeout)
+    canonical_base = args.base_url.rstrip("/")
+    fetch_base = args.fetch_base_url.rstrip("/") if args.fetch_base_url else canonical_base
+
+    gate = LaunchGate(
+        fetch_base_url=fetch_base,
+        canonical_base_url=canonical_base,
+        timeout=args.timeout,
+        insecure=args.insecure,
+    )
     results = gate.run()
-    report = render_markdown(args.base_url.rstrip("/"), results)
+    report = render_markdown(canonical_base, fetch_base, results)
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)

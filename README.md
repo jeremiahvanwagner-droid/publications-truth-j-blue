@@ -13,7 +13,7 @@ Static publication website for Truth J Blue and Jeremiah Van Wagner.
 - `content/internal/`: Planning and internal docs (not deployed).
 - `.github/workflows/`: CI validation and Pages deploy.
 - `scripts/launch_gate.py`: Phase 6 live acceptance checks.
-- `docs/launch/`: launch gate, submission, and baseline operations docs.
+- `docs/launch/`: launch gate, submission, and domain repair docs.
 
 ## Public Files Policy
 Only files inside `site/` are published. Source docs must remain outside `site/`.
@@ -33,10 +33,12 @@ Restricted from publish artifact:
 - `.github/workflows/deploy-pages.yml`
   - uploads only `site/` to GitHub Pages
 
-## Required GitHub Setting (one-time)
+## Required GitHub Settings (one-time)
 1. Open repository **Settings**.
 2. Open **Pages**.
 3. Set **Source** to **GitHub Actions**.
+4. Set **Custom domain** to `pub.jeremiahvanwagner.com`.
+5. Enable **Enforce HTTPS** after certificate issuance.
 
 ## DNS Cutover (`pub.jeremiahvanwagner.com`)
 At your DNS provider:
@@ -55,12 +57,17 @@ Any push to `main`:
 2. deploys `site/` via `Deploy Static Site to GitHub Pages`
 
 ## Phase 6 Launch Operations
-Automated go-live gate:
+Primary production gate:
 - `npm run launch:gate`
 - Writes `docs/launch/reports/latest-launch-gate.md`
 
+Pre-cutover content audit (fetches GitHub Pages URL, validates production canonical contract):
+- `npm run launch:gate:github`
+- Writes `docs/launch/reports/github-pages-audit.md`
+
 Manual handover set:
 - `docs/launch/phase-6-launch-gate.md`
+- `docs/launch/custom-domain-repair.md`
 - `docs/launch/sitemap-submission-checklist.md`
 - `docs/launch/baseline-metrics.md`
 - `docs/releases/v1-freeze.md`
@@ -89,6 +96,7 @@ Commands:
 - `npm run build`
 - `npm run start`
 - `npm run launch:gate`
+- `npm run launch:gate:github`
 
 Important:
 - Production GitHub Pages deployment still publishes only `site/`.

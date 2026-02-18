@@ -1,7 +1,8 @@
 # Phase 6 Launch Gate Report
 
-- Run (UTC): 2026-02-18 12:46:51Z
-- Base URL: https://pub.jeremiahvanwagner.com
+- Run (UTC): 2026-02-18 12:54:13Z
+- Canonical Base URL: https://pub.jeremiahvanwagner.com
+- Fetch Base URL: https://pub.jeremiahvanwagner.com
 - Gate Status: FAIL
 - Checks Passed: 0/15
 

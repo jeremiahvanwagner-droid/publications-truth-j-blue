@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli @tailwindcss/postcss postcss autoprefixer",
-    "launch:gate": "python scripts/launch_gate.py"
+    "launch:gate": "python scripts/launch_gate.py",
+    "launch:gate:github": "python scripts/launch_gate.py --base-url https://pub.jeremiahvanwagner.com --fetch-base-url https://jeremiahvanwagner-droid.github.io/publications-truth-j-blue --output docs/launch/reports/github-pages-audit.md"
   },
   "keywords": [],
   "author": "",

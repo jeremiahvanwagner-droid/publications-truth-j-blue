@@ -1,15 +1,17 @@
 # Baseline Metrics
 
 ## Scope
-Production domain: `https://pub.jeremiahvanwagner.com`
+Canonical production domain: `https://pub.jeremiahvanwagner.com`
 
 Use this document to capture launch-day and early crawl/index benchmarks.
 
 ## Launch Snapshot (T+0)
 - Snapshot date (UTC): `2026-02-18`
-- Launch gate report: `docs/launch/reports/latest-launch-gate.md`
-- Gate status: `FAIL`
-- Blocking issue: TLS certificate hostname mismatch on `pub.jeremiahvanwagner.com`
+- Production launch gate: `docs/launch/reports/latest-launch-gate.md`
+- Production gate status: `FAIL`
+- Alternate host audit: `docs/launch/reports/github-pages-audit.md`
+- Alternate host gate status: `PASS`
+- Blocking issue: custom domain TLS/domain binding mismatch (`pub.jeremiahvanwagner.com`)
 
 ## Search Console Baseline
 | Metric | Value | Notes |

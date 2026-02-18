@@ -5,15 +5,22 @@ Phase 6 defines the go-live acceptance gate and handover process for `https://pu
 
 Launch is approved only when all technical and SEO acceptance checks pass.
 
-## Automated Gate Command
-Run after each production deploy:
+## Automated Gate Commands
+Production domain gate:
 
 ```bash
-python scripts/launch_gate.py --base-url https://pub.jeremiahvanwagner.com
+npm run launch:gate
 ```
 
-Output report path:
+Pre-cutover content gate (validates production canonical contract while fetching from GitHub Pages URL):
+
+```bash
+npm run launch:gate:github
+```
+
+Output report paths:
 - `docs/launch/reports/latest-launch-gate.md`
+- `docs/launch/reports/github-pages-audit.md`
 
 Gate status rules:
 - `PASS`: all checks pass.
@@ -31,8 +38,9 @@ Gate status rules:
 7. Program page contains program-page links only (no direct checkout links).
 
 ## Manual Handover Tasks
-1. Submit `https://pub.jeremiahvanwagner.com/sitemap.xml` in Google Search Console.
-2. Submit the same sitemap in Bing Webmaster Tools.
-3. Capture baseline crawl/index/query metrics in `docs/launch/baseline-metrics.md`.
-4. Confirm v1 freeze status in `docs/releases/v1-freeze.md`.
-5. Track deferred analytics/lead operations work in `docs/backlog/v1.1.md`.
+1. If production gate fails due TLS/domain mapping, run `docs/launch/custom-domain-repair.md`.
+2. Submit `https://pub.jeremiahvanwagner.com/sitemap.xml` in Google Search Console.
+3. Submit the same sitemap in Bing Webmaster Tools.
+4. Capture baseline crawl/index/query metrics in `docs/launch/baseline-metrics.md`.
+5. Confirm v1 freeze status in `docs/releases/v1-freeze.md`.
+6. Track deferred analytics/lead operations work in `docs/backlog/v1.1.md`.
