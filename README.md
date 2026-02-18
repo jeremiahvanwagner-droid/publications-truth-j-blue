@@ -26,3 +26,5 @@ Static publications website for Truth J Blue and Jeremiah Van Wagner.
 
 ## Release
 Any push to `main` triggers validation + deploy.
+
+<!-- redeploy trigger 2026-02-17 22:50:44 UTC -->
