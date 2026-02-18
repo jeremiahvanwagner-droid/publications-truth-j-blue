@@ -1,0 +1,28 @@
+{
+  "name": "publication-truth-j-blue",
+  "version": "1.0.0",
+  "description": "Static publication website for Truth J Blue and Jeremiah Van Wagner.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "frameworks": "npm ls next react react-dom tailwindcss @tailwindcss/cli postcss autoprefixer"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "private": true,
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
+  }
+}
