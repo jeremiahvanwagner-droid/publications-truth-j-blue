@@ -1,12 +1,16 @@
 # Truth J Blue Product Information
 
+Offer facts below were checked against the Truth J Blue store on 31 October 2026. Canonical links are store product pages. Direct checkout URLs are not listed here.
+
 ## Inner Alignment Audit
 
-**Price:** $47
+**Price:** $97
 
-**URL:** [https://truthjblue.com/inner-alignment-audit](https://truthjblue.com/inner-alignment-audit)
+**Format:** Twenty-eight statements across four domains, clear scoring, and a focused follow-up call.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/696e9d90b112a056c6a3f6c5](https://site.truthjblue.com/payment-link/696e9d90b112a056c6a3f6c5)
+**Free version:** [https://truthjblue.com/audit](https://truthjblue.com/audit) (the main site offers this audit as a gift; it describes the sitting as taking a few minutes, not a stated three minutes)
+
+**URL:** [https://store.truthjblue.com/product/inner-alignment-audit](https://store.truthjblue.com/product/inner-alignment-audit)
 
 **SEO Title:** Inner Alignment Audit | Spiritual & Life Strategy Session
 
@@ -16,11 +20,11 @@
 
 ## Purpose Activation Toolkit
 
-**Price:** $97
+**Price:** $247
 
-**URL:** [https://truthjblue.com/purpose-activation-toolkit](https://truthjblue.com/purpose-activation-toolkit)
+**Format:** Four interactive modules. One-time purchase, lifetime access, no subscription.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/696ec80453f21b434dfae38d](https://site.truthjblue.com/payment-link/696ec80453f21b434dfae38d)
+**URL:** [https://store.truthjblue.com/product/purpose-activation-toolkit](https://store.truthjblue.com/product/purpose-activation-toolkit)
 
 **SEO Title:** Purpose Activation Toolkit | Tools to Clarify & Walk Your Calling
 
@@ -30,11 +34,7 @@
 
 ## Scorecard Deep‑Dive Workshop
 
-**Price:** $247
-
-**URL:** [https://truthjblue.com/scorecard-deep-dive](https://truthjblue.com/scorecard-deep-dive)
-
-**Payment Link:** [https://site.truthjblue.com/payment-link/698fb0945a761e379712ae9c](https://site.truthjblue.com/payment-link/698fb0945a761e379712ae9c)
+**Store status:** Not listed on the Truth J Blue store as of 31 October 2026. The store sitemap has no Scorecard product, and [https://truthjblue.com/scorecard-deep-dive](https://truthjblue.com/scorecard-deep-dive) returns 404. The previous $247 price and payment link are removed because the store does not state them. This is not the store's Deep Dive Call ([https://store.truthjblue.com/product/deep-dive-call](https://store.truthjblue.com/product/deep-dive-call)), which is a separate $247, 30-minute session.
 
 **SEO Title:** Scorecard Deep‑Dive Workshop | Clarify Metrics That Matter
 
@@ -44,13 +44,13 @@
 
 ## Ascension Intensive
 
-**Price:** $1,997.00 (3-Month Payment Plan: $897.00)
+**Price:** $1,997
 
-**URL:** [https://truthjblue.com/ascension-intensive](https://truthjblue.com/ascension-intensive)
+**Format:** 6 weeks, by application. A payment plan is available; the store does not state the plan amount or number of payments.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/698fc58188cc4735a9d44d5d](https://site.truthjblue.com/payment-link/698fc58188cc4735a9d44d5d)
+**URL:** [https://store.truthjblue.com/product/ascension-intensive](https://store.truthjblue.com/product/ascension-intensive)
 
-**SEO Title:** Ascension Intensive | 1‑Day Spiritual Breakthrough Experience
+**SEO Title:** Ascension Intensive | 6‑Week Spiritual Breakthrough Experience
 
 **SEO Description:** Reserve your spot in the Ascension Intensive, a focused breakthrough experience to release old patterns, elevate your spiritual frequency in Christ, and receive clarity for your next Divine assignment.
 
@@ -58,11 +58,11 @@
 
 ## Beyond the Veil Mentorship
 
-**Price:** $2,497.00
+**Price:** $2,497
 
-**URL:** [https://truthjblue.com/mentorship-interview](https://truthjblue.com/mentorship-interview)
+**Format:** 12 weeks. Begins with an interview. The store does not state a payment plan.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/697d2576c80eaf1136930c17](https://site.truthjblue.com/payment-link/697d2576c80eaf1136930c17)
+**URL:** [https://store.truthjblue.com/product/beyond-the-veil-mentorship](https://store.truthjblue.com/product/beyond-the-veil-mentorship)
 
 **SEO Title:** Beyond the Veil Mentorship | 12‑Week Christ‑Centered Transformation
 
@@ -72,11 +72,11 @@
 
 ## VIP Mastermind
 
-**Price:** $5,000.00
+**Price:** $5,000
 
-**URL:** [https://truthjblue.com/vip-mastermind](https://truthjblue.com/vip-mastermind)
+**Format:** 1-year commitment, four intensives a year, limited to 25 members. The store does not state a payment plan.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/698fc59b88cc47822cd44d8f](https://site.truthjblue.com/payment-link/698fc59b88cc47822cd44d8f)
+**URL:** [https://store.truthjblue.com/product/inner-circle-for-kingdom-visionaries](https://store.truthjblue.com/product/inner-circle-for-kingdom-visionaries)
 
 **SEO Title:** VIP Mastermind | Inner Circle for Kingdom Visionaries
 
@@ -86,11 +86,11 @@
 
 ## Private Coaching
 
-**Price:** $10,000.00
+**Price:** $10,000
 
-**URL:** [https://truthjblue.com/private-coaching](https://truthjblue.com/private-coaching)
+**Format:** Thirteen weekly 90-minute sessions a quarter, 6-month minimum, limited to 8 clients. The store lists $10,000 and does not state whether that amount is per quarter or for the minimum term. No payment plan is stated.
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/698fc5ab88cc472033d44da0](https://site.truthjblue.com/payment-link/698fc5ab88cc472033d44da0)
+**URL:** [https://store.truthjblue.com/product/high-level-spiritual-mentorship](https://store.truthjblue.com/product/high-level-spiritual-mentorship)
 
 **SEO Title:** Private Coaching with Truth J Blue | High‑Level Spiritual Mentorship
 
@@ -100,11 +100,13 @@
 
 ## Strategic Partnership
 
-**Price:** $25,000.00
+**Price:** $25,000
 
-**URL:** [https://truthjblue.com/strategic-partnership](https://truthjblue.com/strategic-partnership)
+**Investment:** $25,000-$100,000+, depending on scope
 
-**Payment Link:** [https://site.truthjblue.com/payment-link/698fc5bc9577be2265b6ec75](https://site.truthjblue.com/payment-link/698fc5bc9577be2265b6ec75)
+**Format:** By invitation, maximum three partners a year. The store does not state a payment plan.
+
+**URL:** [https://store.truthjblue.com/product/truth-j-blue-strategic-partnership](https://store.truthjblue.com/product/truth-j-blue-strategic-partnership)
 
 **SEO Title:** Strategic Partnership | Long‑Term Kingdom Growth Collaboration
 
@@ -112,4 +114,4 @@
 
 ---
 
-*Last Updated: February 17, 2026*
+*Last Updated: October 31, 2026*
