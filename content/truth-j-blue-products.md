@@ -1,6 +1,6 @@
 # Truth J Blue Product Information
 
-Offer facts below were checked against the Truth J Blue store on 31 October 2026. Canonical links are store product pages. Direct checkout URLs are not listed here.
+Offer facts below were checked against the Truth J Blue store on 31 October 2026, then adjusted for owner clarification: Private Coaching starts at $10,000 as a minimum investment, and payment plans are arranged on request rather than sold as preset amounts. Canonical links are store product pages. Direct checkout URLs are not listed here.
 
 ## Inner Alignment Audit
 
@@ -46,7 +46,9 @@ Offer facts below were checked against the Truth J Blue store on 31 October 2026
 
 **Price:** $1,997
 
-**Format:** 6 weeks, by application. A payment plan is available; the store does not state the plan amount or number of payments.
+**Format:** 6 weeks, by application.
+
+**Payment:** Payment plans are not pre-created. They can be arranged on request. No plan amount is listed.
 
 **URL:** [https://store.truthjblue.com/product/ascension-intensive](https://store.truthjblue.com/product/ascension-intensive)
 
@@ -60,7 +62,9 @@ Offer facts below were checked against the Truth J Blue store on 31 October 2026
 
 **Price:** $2,497
 
-**Format:** 12 weeks. Begins with an interview. The store does not state a payment plan.
+**Format:** 12 weeks. Begins with an interview.
+
+**Payment:** Payment plans are not pre-created. They can be arranged on request. No plan amount is listed.
 
 **URL:** [https://store.truthjblue.com/product/beyond-the-veil-mentorship](https://store.truthjblue.com/product/beyond-the-veil-mentorship)
 
@@ -74,7 +78,9 @@ Offer facts below were checked against the Truth J Blue store on 31 October 2026
 
 **Price:** $5,000
 
-**Format:** 1-year commitment, four intensives a year, limited to 25 members. The store does not state a payment plan.
+**Format:** 1-year commitment, four intensives a year, limited to 25 members.
+
+**Payment:** Payment plans are not pre-created. They can be arranged on request. No plan amount is listed.
 
 **URL:** [https://store.truthjblue.com/product/inner-circle-for-kingdom-visionaries](https://store.truthjblue.com/product/inner-circle-for-kingdom-visionaries)
 
@@ -86,9 +92,11 @@ Offer facts below were checked against the Truth J Blue store on 31 October 2026
 
 ## Private Coaching
 
-**Price:** $10,000
+**Price:** Starting at $10,000 (minimum investment, not a per-quarter rate)
 
-**Format:** Thirteen weekly 90-minute sessions a quarter, 6-month minimum, limited to 8 clients. The store lists $10,000 and does not state whether that amount is per quarter or for the minimum term. No payment plan is stated.
+**Format:** Thirteen weekly 90-minute sessions a quarter, 6-month minimum, limited to 8 clients.
+
+**Payment:** Payment plans are not pre-created. They can be arranged on request. No plan amount is listed.
 
 **URL:** [https://store.truthjblue.com/product/high-level-spiritual-mentorship](https://store.truthjblue.com/product/high-level-spiritual-mentorship)
 
@@ -104,7 +112,9 @@ Offer facts below were checked against the Truth J Blue store on 31 October 2026
 
 **Investment:** $25,000-$100,000+, depending on scope
 
-**Format:** By invitation, maximum three partners a year. The store does not state a payment plan.
+**Format:** By invitation, maximum three partners a year.
+
+**Payment:** Payment plans are not pre-created. They can be arranged on request. No plan amount is listed.
 
 **URL:** [https://store.truthjblue.com/product/truth-j-blue-strategic-partnership](https://store.truthjblue.com/product/truth-j-blue-strategic-partnership)
 
